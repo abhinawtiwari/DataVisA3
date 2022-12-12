@@ -11,7 +11,7 @@
         margin: 0;
         padding: 0;
         background: #000000 url(/globe/loading.gif) center center no-repeat;
-        color: #ffffff;
+        color: #fff;
         font-family: sans-serif;
         font-size: 13px;
         line-height: 20px;
@@ -62,40 +62,53 @@
         left: 20px;
         background-color: rgba(0,0,0,0.2);
         border-radius: 3px;
-        font: 20px Georgia;
+        font: 16px Georgia;
         padding: 10px;
       }
 
+      .intro {
+        position: absolute;
+        top: 290px;
+        width: 270px;
+        left: 20px;
+        background-color: rgba(0,0,0,0.2);
+        border-radius: 3px;
+        font: 15px Georgia;
+        padding: 10px;
+        color: #ffffffa3;
+      }
+
       .year {
-        font: 16px Georgia;
+        font: 15px Georgia;
         line-height: 26px;
         height: 30px;
         text-align: center;
         float: left;
         width: 90px;
         color: rgba(255, 255, 255, 0.4);
-        margin: 1rem;
+        margin: 0.5rem;
+        margin-bottom: 1rem;
 
         cursor: pointer;
         -webkit-transition: all 0.1s ease-out;
       }
 
       .year:hover, .year.active {
-        font-size: 18px;
+        /* font-size: 18px; */
         color: #fff;
       }
 
       .bar-chart {
         height: 220px;
-        width: 375px;
+        width: 365px;
         position: absolute;
         right: 20px;
         top: 15px;
       }
 
       .pie-chart {
-        height: 220px;
-        width: 375px;
+        height: 230px;
+        width: 365px;
         position: absolute;
         right: 20px;
         top: 250px;
@@ -103,10 +116,10 @@
 
       .scatter-chart {
         height: 220px;
-        width: 375px;
+        width: 365px;
         position: absolute;
         right: 20px;
-        top: 485px;
+        top: 495px;
       }
 
       /* #ce span {
@@ -128,11 +141,12 @@
         bottom: 15px;
         left: 20px;
       }
-      .main-globe {
+      .globe-globe {
         position: absolute;
-        top: 200px;
-        width: 800px;
-        height: 500px;
+        top: 20px;
+        left: 0px;
+        width: 200px;
+        height: 200px;
       }
     </style>
     <script src="//unpkg.com/globe.gl"></script>
@@ -238,9 +252,15 @@
   </head>
   <body>
   
-  <div id="globeViz" style="width: 100px; height: 100px;"></div>
-  <!-- <div id="globeViz2" style="height: 100px; top: 20px"></div> -->
+  <div id="globeViz" class="globe-globe"></div>
+  <div class="intro">
+    <p>This project does an exploratory data analysis of restaurants listed in a reknowned food delivery platform called Zomato.</p>
+    <p>Size of bars on the lat-long coordinates spread across continents are proportional to the number of votes given to a particular restaurant by customers.</p>
+    <p>Color of bars are representative of how the restaurants are rated based on customer ratings, such as <span style="color: red;">Average</span>, <span style="color: blue;">Excellent</span>, <span style="color: green">Good</span>, <span style="color: white;">Not rated</span>, <span style="color: pink;">Poor</span>, <span style="color: yellow;">Very Good</span>.</p>
+    <p>Towards the right, three charts are shown which are self-explnatory.</p>
+  </div>
   
+  <!-- webgl container -->
   <div id="container" class="main-globe"></div>
   
   <div id="scatterchartContainer" class="scatter-chart"></div>
@@ -252,7 +272,7 @@
   <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
   
   <div id="info">
-    Viz tools used: <strong><a href="http://www.chromeexperiments.com/globe">WebGL Globe</a></strong> <strong><a href="https://canvasjs.com/">canvasjs</a></strong> <span class="bull">&bull;</span>Visualized by Abhinaw Tiwari (22300110) <span class="bull">&bull;</span> Data acquired from <a href="https://www.kaggle.com/datasets/shrutimehta/zomato-restaurants-data?resource=download">Kaggle</a>
+    Viz tools used: <strong><a href="https://globe.gl/">Globe.GL</a></strong> and <strong><a href="https://canvasjs.com/">canvasjs</a></strong> <span class="bull">&bull;</span>Visualized by Abhinaw Tiwari (22300110) <span class="bull">&bull;</span> Data acquired from <a href="https://www.kaggle.com/datasets/shrutimehta/zomato-restaurants-data?resource=download">Kaggle</a>
   </div>
 
   <div id="currentInfo">
@@ -268,7 +288,7 @@
   </div>
 
   <div id="title">
-    Zomato Analysis
+    Zomato Exploratory Data Analysis
   </div>
 
   <div class="assign">
@@ -309,92 +329,214 @@
           y.setAttribute('class', 'year active');
         };
       };
+
+      const resetHighlight = () => {
+        var yy = document.getElementsByClassName('year');
+        for(i=0; i<yy.length; i++) {
+          yy[i].setAttribute('class','year');
+        }
+      }
+
+      var voteFunc = function() {
+        return function() {
+          // const N = 300;
+          resetHighlight();
+          
+          var y = document.getElementById('vote');
+          y.setAttribute('class', 'year active');
+          const xhr = new XMLHttpRequest();
+          let vote_list = []
+          xhr.open('GET', '/data/votes1.json', true);
+          xhr.onreadystatechange = function(e) {
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                vote_list = JSON.parse(xhr.responseText);
+                vote_list = JSON.parse(vote_list);
+                // console.log('vote list: ', vote_list)
+                // vote_list.map(d => {
+                //   console.log('color: ', d.color)
+                // })
+                const gData = vote_list.map((d) => ({
+                  lat: d.lat,
+                  lng: d.long,
+                  size: Math.random() / 3,
+                  color: d.color
+                }));
+
+                Globe()
+                  .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+                  .pointsData(gData)
+                  .pointAltitude('size')
+                  .pointColor('color')
+                (document.getElementById('globeViz'))
+              }
+            }
+          };
+          xhr.send(null);
+
+        }
+      }
+      
+      var hodFunc = function() {
+        return function() {
+          // const N = 300;
+          resetHighlight();
+          var y = document.getElementById('hod');
+          y.setAttribute('class', 'year active');
+          
+          const xhr = new XMLHttpRequest();
+          let vote_list = []
+          xhr.open('GET', '/data/hod1.json', true);
+          xhr.onreadystatechange = function(e) {
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                vote_list = JSON.parse(xhr.responseText);
+                vote_list = JSON.parse(vote_list);
+                const gData = vote_list.map((d) => ({
+                  lat: d.lat,
+                  lng: d.long,
+                  size: Math.random() / 3,
+                  color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)]
+                }));
+
+                Globe()
+                  .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+                  .pointsData(gData)
+                  .pointAltitude('size')
+                  .pointColor('color')
+                (document.getElementById('globeViz'))
+              }
+            }
+          };
+          xhr.send(null);
+
+        }
+      }
       
       var nhodFunc = function() {
         return function() {
-          const N = 300;
-          const gData = [...Array(N).keys()].map(() => ({
-            lat: (Math.random() - 0.5) * 180,
-            lng: (Math.random() - 0.5) * 360,
-            size: Math.random() / 3,
-            color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)]
-          }));
+          // const N = 300;
+          resetHighlight();
+          var y = document.getElementById('nhod');
+          y.setAttribute('class', 'year active');
+          
+          const xhr = new XMLHttpRequest();
+          let vote_list = []
+          xhr.open('GET', '/data/nhod1.json', true);
+          xhr.onreadystatechange = function(e) {
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                vote_list = JSON.parse(xhr.responseText);
+                vote_list = JSON.parse(vote_list);
+                const gData = vote_list.map((d) => ({
+                  lat: d.lat,
+                  lng: d.long,
+                  size: Math.random() / 3,
+                  color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)]
+                }));
 
-          Globe()
-            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
-            .pointsData(gData)
-            .pointAltitude('size')
-            .pointColor('color')
-          (document.getElementById('globeViz'))
+                Globe()
+                  .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+                  .pointsData(gData)
+                  .pointAltitude('size')
+                  .pointColor('color')
+                (document.getElementById('globeViz'))
+              }
+            }
+          };
+          xhr.send(null);
+
         }
       }
-
-      var hodFunc = function() {
+      
+      var graFunc = function() {
         return function() {
-          const N = 300;
-          const gData = [...Array(N).keys()].map(() => ({
-            lat: 180,
-            lng: (Math.random() - 0.5) * 360,
-            size: Math.random() / 3,
-            color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)]
-          }));
+          resetHighlight();
+          var y = document.getElementById('grating');
+          y.setAttribute('class', 'year active');
+          
+          const xhr = new XMLHttpRequest();
+          let vote_list = []
+          xhr.open('GET', '/data/rating_g41.json', true);
+          xhr.onreadystatechange = function(e) {
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                vote_list = JSON.parse(xhr.responseText);
+                vote_list = JSON.parse(vote_list);
+                const gData = vote_list.map((d) => ({
+                  lat: d.lat,
+                  lng: d.long,
+                  size: Math.random() / 4,
+                  color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)]
+                }));
 
-          Globe()
-            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
-            .pointsData(gData)
-            .pointAltitude('size')
-            .pointColor('color')
-          (document.getElementById('globeViz'))
+                Globe()
+                  .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+                  .pointsData(gData)
+                  .pointAltitude('size')
+                  .pointColor('color')
+                (document.getElementById('globeViz'))
+              }
+            }
+          };
+          xhr.send(null);
+
         }
       }
-      // for(var i = 0; i<years.length; i++) {
-      //   var y = document.getElementById('year'+years[i]);
-      //   y.addEventListener('mouseover', settime(globe,i), false);
-      // }
+      
+      var lraFunc = function() {
+        return function() {
+          // const N = 300;
+          resetHighlight();
+          var y = document.getElementById('lrating');
+          y.setAttribute('class', 'year active');
+          
+          const xhr = new XMLHttpRequest();
+          let vote_list = []
+          xhr.open('GET', '/data/rating_l41.json', true);
+          xhr.onreadystatechange = function(e) {
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                vote_list = JSON.parse(xhr.responseText);
+                vote_list = JSON.parse(vote_list);
+                const gData = vote_list.map((d) => ({
+                  lat: d.lat,
+                  lng: d.long,
+                  size: Math.random() / 3,
+                  color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)]
+                }));
 
+                Globe()
+                  .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+                  .pointsData(gData)
+                  .pointAltitude('size')
+                  .pointColor('color')
+                (document.getElementById('globeViz'))
+              }
+            }
+          };
+          xhr.send(null);
+
+        }
+      }
+      
       var y = document.getElementById('vote');
-      y.addEventListener('mouseover', settime(globe,0), false);
+      y.addEventListener('mouseover', voteFunc(), false);      
 
       var y = document.getElementById('hod');
-      y.addEventListener('mouseover', settime(globe,1), false);
-      y.addEventListener('click', hodFunc(), false);
+      y.addEventListener('mouseover', hodFunc(), false);
 
       var nhelement = document.getElementById('nhod');
-      nhelement.addEventListener('mouseover', settime(globe,2), false);
-      nhelement.addEventListener('click', nhodFunc(), false);
+      nhelement.addEventListener('mouseover', nhodFunc(), false);
 
       var y = document.getElementById('grating');
-      y.addEventListener('mouseover', settime(globe,3), false);
-      var y = document.getElementById('lrating');
-      y.addEventListener('mouseover', settime(globe,4), false);
-      
-      var xhr;
-      TWEEN.start();
-      
-      
-      xhr = new XMLHttpRequest();
-      xhr.open('GET', '/globe/restaurant.json', true);
-      xhr.onreadystatechange = function(e) {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            var data = JSON.parse(xhr.responseText);
-            window.data = data;
-            console.log('data is: ', data)
-            for (i=0;i<data.length;i++) {
-              globe.addData(data[i][1], {format: 'magnitude', name: data[i][0], animated: true});
-            }
-            console.log("globe is: ", globe)
-            globe.createPoints();
-            settime(globe,0)();
-            globe.animate();
-            document.body.style.backgroundImage = 'none'; // remove loading
-          }
-        }
-      };
-      xhr.send(null);
+      y.addEventListener('mouseover', graFunc(), false);
 
-      // bar chart
-      
+      var y = document.getElementById('lrating');
+      y.addEventListener('mouseover', lraFunc(), false);
+
+      container.style.display = 'none'
+      document.body.style.backgroundImage = 'none'; // remove loading
     }
 
   </script>
