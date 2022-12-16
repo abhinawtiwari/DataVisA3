@@ -1,109 +1,22 @@
-The **WebGL Globe** is an open platform for geographic data visualization created by the Google Data Arts Team. We encourage you to copy the code, add your own data, and create your own globes.
+- Clone the project from github repo using below command: 
+git clone https://github.com/abhinawtiwari/DataVisA3
+- change directory to DataVisA3 folder 
+cd DataVisA3
+- checkout from master branch
+git checkout -b master --track remotes/origin/master
 
-Check out the examples at https://experiments.withgoogle.com/chrome/globe, and if you create a globe, please [share it with us](http://www.chromeexperiments.com/submit). We post our favorite globes publicly.
+- install nodejs from https://nodejs.org/en/ if not installed already.
+- Check the installation of node.js using "node -v" command on terminal. If running this command gives this error, "node: The term 'node' is not recognized...", then node is not installed. Proceed to node installation from https://nodejs.org/en/ . Download the installer and press next next for default settings. After finishing the installation, proceed to next steps.
 
-![](http://4.bp.blogspot.com/-nB6XnTgb4AA/TcLQ4gRBtfI/AAAAAAAAH-U/vb2GuhPN6aM/globe.png)
+If node is installed, running the command "node -v" will give the version of the node installed. e.g., v18.12.1
 
-----
+- Run "npm i" to install node modules required for the project
+- install http-server npm library using below command
+    npm install -g http-server
+- run the following command:
+    http-server
+- you should see the "Available on" message which shows the IP addresses on which the application is live. e.g., http://192.168.129.1:8080
+- go to the IP address on your browser by appending "/globe" to the above IP. For example, if the IP was http://192.168.129.1:8080, go to http://192.168.129.1:8080/globe
 
-**The WebGL Globe** supports data in `JSON` format, a sample of which you can find [here](https://github.com/dataarts/webgl-globe/blob/master/globe/population909500.json). `webgl-globe` makes heavy use of the [Three.js library](https://github.com/mrdoob/three.js/).
-
-# Data Format
-
-The following illustrates the `JSON` data format that the globe expects:
-
-```javascript
-var data = [
-    [
-    'seriesA', [ latitude, longitude, magnitude, latitude, longitude, magnitude, ... ]
-    ],
-    [
-    'seriesB', [ latitude, longitude, magnitude, latitude, longitude, magnitude, ... ]
-    ]
-];
-```
-
-# Basic Usage
-
-The following code polls a `JSON` file (formatted like the one above) for geo-data and adds it to an animated, interactive WebGL globe.
-
-```javascript
-// Where to put the globe?
-var container = document.getElementById( 'container' );
-
-// Make the globe
-var globe = new DAT.Globe( container );
-
-// We're going to ask a file for the JSON data.
-var xhr = new XMLHttpRequest();
-
-// Where do we get the data?
-xhr.open( 'GET', 'myjson.json', true );
-
-// What do we do when we have it?
-xhr.onreadystatechange = function() {
-
-    // If we've received the data
-    if ( xhr.readyState === 4 && xhr.status === 200 ) {
-
-        // Parse the JSON
-        var data = JSON.parse( xhr.responseText );
-
-        // Tell the globe about your JSON data
-        for ( var i = 0; i < data.length; i ++ ) {
-            globe.addData( data[i][1], {format: 'magnitude', name: data[i][0]} );
-        }
-
-        // Create the geometry
-        globe.createPoints();
-
-        // Begin animation
-        globe.animate();
-
-    }
-
-};
-
-// Begin request
-xhr.send( null );
-```
-
-Rating >= 4 are in 
-India
-Phillipines
-Canada
-Qatar
-Australia
-Turkey
-New Zealand
-UAE
-Brazil
-United States
-Indonesia
-United Kingdom
-South Africa
-Singapore
-Sri Lanka
-
-Rating < 4 in:
-
-country wise count of restaurants:
-India  :  8652
-United States  :  434
-United Kingdom  :  80
-Brazil  :  60
-
-South Africa  :  60
-UAE  :  60
-Australia  :  24
-Canada  :  4
-Indonesia  :  21
-New Zealand  :  40
-Phillipines  :  22
-Qatar  :  20
-Singapore  :  20
-
-Sri Lanka  :  20
-Turkey  :  34
-
-
+- hover over on one of the categories on the top left of the screen to see the globe in action.
+- hover over other categories to see other globe visualizations.
