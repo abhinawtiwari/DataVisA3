@@ -2,8 +2,6 @@
 git clone https://github.com/abhinawtiwari/DataVisA3
 - change directory to DataVisA3 folder 
 cd DataVisA3
-- checkout from master branch
-git checkout -b master --track remotes/origin/master
 
 - install nodejs from https://nodejs.org/en/ if not installed already.
 - Check the installation of node.js using "node -v" command on terminal. If running this command gives this error, "node: The term 'node' is not recognized...", then node is not installed. Proceed to node installation from https://nodejs.org/en/ . Download the installer and press next next for default settings. After finishing the installation, proceed to next steps.
